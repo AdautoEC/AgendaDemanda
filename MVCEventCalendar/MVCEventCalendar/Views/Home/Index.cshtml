@@ -1,0 +1,112 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<div id="calender"></div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span id="eventTitle"></span></h4>
+            </div>
+            <div class="modal-body">
+                <p id="pDetails"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print" />
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/pt-br.min.js"></script>
+    
+
+
+    <script>
+        $(document).ready(function () {
+            var events = [];
+            $.ajax({
+                type: "GET",
+                url: "/home/GetTarefas",
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        events.push({
+                            title: v.Execurtor + ": " + v.Titulo,
+                            titulo: v.Titulo,
+                            description: v.Descricao,
+                            start: moment(v.DataIni),
+                            end: null,
+                            color: v.Cor,
+                            allDay: false,
+                            dtSol: moment(v.DataSol),
+                            andamento: v.Andamento == 0 ? 'Não iniciado' : v.Andamento == 1 ? 'Iniciado' : v.Andamento == 2 ? 'Pausado' : v.Andamento == 3 ? 'Finalizado' : v.Andamento == 4 ? 'Cancelado' : v.Andamento == 5 ? 'Teste': 'Sem status',
+                            executor: v.Execurtor
+                        });
+                    })
+
+                    GenerateCalender(events);
+                },
+                error: function (error) {
+                    alert('failed');
+                }
+            })
+
+            function GenerateCalender(events) {
+                $('#calender').fullCalendar('destroy');
+                $('#calender').fullCalendar({
+                    locale: 'pt-br',
+                    contentHeight: 400,
+                    defaultDate: new Date(),
+                    timeFormat: 'h(:mm)a',
+
+                    buttonText: {
+                        today: 'Hoje',
+                        month: 'Mês',
+                        week: 'Semana',
+                        day: 'Dia',
+                        agenda: 'Agenda'
+                    },
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro',
+                        'Outubro', 'Novembro', 'Dezembro'],
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,basicWeek,basicDay,agenda'
+                    },
+                    displayEventTime: false,
+                    eventLimit: true,
+                    eventColor: '#378006',
+                    events: events,
+                    eventClick: function (calEvent, jsEvent, view) {
+                        $('#myModal #eventTitle').text(calEvent.titulo);
+                        var $description = $('<div/>');
+                        $description.append($('<p/>').html('<b>Solicitada em: </b>' + calEvent.dtSol.format("DD-MMM-YYYY HH:mm a")));
+                        $description.append($('<p/>').html('<b>Iniciada em: </b>' + calEvent.start.format("DD-MMM-YYYY HH:mm a")));
+                        $description.append($('<p/>').html('<b>Estatus: </b>' + calEvent.andamento));
+                        $description.append($('<p/>').html('<b>Responsável em: </b>' + calEvent.executor));
+                        /*if (calEvent.end != null) {
+                            $description.append($('<p/>').html('<b>Solicitada em: </b>' + calEvent.end.format("DD-MMM-YYYY HH:mm a")));
+                        }*/
+                        $description.append($('<p/>').html('<b>Descrição: </b>' + calEvent.description));
+                        $('#myModal #pDetails').empty().html($description);
+
+                        $('#myModal').modal();
+                    }
+                })
+                
+            }
+        })
+    </script>
+}

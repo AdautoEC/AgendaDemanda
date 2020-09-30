@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="Database1ModelStoreContainer" CdmEntityContainer="Database1Entities">
+    <EntitySetMapping Name="Tarefa">
+      <EntityTypeMapping TypeName="Database1Model.Tarefa">
+        <MappingFragment StoreEntitySet="Tarefa">
+          <ScalarProperty Name="TarefaID" ColumnName="TarefaID" />
+          <ScalarProperty Name="Titulo" ColumnName="Titulo" />
+          <ScalarProperty Name="Descricao" ColumnName="Descricao" />
+          <ScalarProperty Name="DataIni" ColumnName="DataIni" />
+          <ScalarProperty Name="DataSol" ColumnName="DataSol" />
+          <ScalarProperty Name="Andamento" ColumnName="Andamento" />
+          <ScalarProperty Name="Cor" ColumnName="Cor" />
+          <ScalarProperty Name="Execurtor" ColumnName="Execurtor" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>
